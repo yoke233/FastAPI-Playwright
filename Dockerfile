@@ -1,4 +1,4 @@
-FROM docker.starringshop.top/library/python:3.11-slim-bookworm
+FROM python:3.11.11-slim-bookworm
 
 # 创建并编辑 sources.list 文件
 RUN sed -i 's@deb.debian.org@mirrors.aliyun.com@g' /etc/apt/sources.list.d/debian.sources
@@ -19,6 +19,8 @@ COPY . /app
 # 设置环境变量
 ENV HOST=0.0.0.0
 ENV PORT=8888
+
+EXPOSE ${PORT}
 
 # 启动应用
 CMD ["python", "main.py"]

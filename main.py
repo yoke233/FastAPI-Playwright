@@ -175,6 +175,15 @@ async def get_meta(page):
     return meta_info
 
 
+async def restart_browser(browser_type, app):
+    """重启浏览器实例"""
+    p = app.state.playwright
+    use_browser = getattr(p, browser_type, None)
+    new_browser = await use_browser.launch(headless=True)
+    app.state.browser_instances[browser_type] = new_browser
+    return new_browser
+
+
 async def get_page_info(request_data: RequestBody, request: Request):
 
     page_info = {}
@@ -186,11 +195,15 @@ async def get_page_info(request_data: RequestBody, request: Request):
     # 如果还没有启动该类型的浏览器，则启动它
     if browser_type not in app.state.browser_instances:
         p = request.app.state.playwright
-        use_browser = getattr(p, request_data.browser, None)
+        use_browser = getattr(p, browser_type, None)
         browser = await use_browser.launch(headless=True)
         app.state.browser_instances[browser_type] = browser
     else:
         browser = app.state.browser_instances[browser_type]
+
+    if browser.is_connected() == False:
+        print("浏览器连接已断开，正在重启...")
+        browser = await restart_browser(browser_type, app)
 
     page = await browser.new_page()
 

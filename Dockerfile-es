@@ -1,0 +1,7 @@
+FROM docker.starringshop.top/library/elasticsearch:7.17.0
+
+# 将本地的IK分词器插件复制到容器中
+COPY elasticsearch-analysis-ik-7.17.0.zip /tmp/
+
+# 安装IK分词器插件
+RUN bin/elasticsearch-plugin install --batch file:///tmp/elasticsearch-analysis-ik-7.17.0.zip

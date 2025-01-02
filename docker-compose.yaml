@@ -1,0 +1,20 @@
+services:
+  es01:
+    image: registry.cn-shanghai.aliyuncs.com/xiaoin/elasticsearch-ik:8.15.3
+    container_name: es01
+    environment:
+      - discovery.type=single-node
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms1g -Xmx20g"
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=TT3FkUyJbtt5FDdO
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ${PWD}/es01:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
