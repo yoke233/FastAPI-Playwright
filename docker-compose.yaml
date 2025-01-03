@@ -9,7 +9,6 @@ services:
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms1g -Xmx20g"
       - xpack.security.enabled=true
-      - ELASTIC_PASSWORD=TT3FkUyJbtt5FDdO
     ulimits:
       memlock:
         soft: -1
