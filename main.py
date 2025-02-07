@@ -205,7 +205,12 @@ async def get_page_info(request_data: RequestBody, request: Request):
         print("浏览器连接已断开，正在重启...")
         browser = await restart_browser(browser_type, app)
 
-    page = await browser.new_page()
+    try:
+        page = await browser.new_page()
+    except Exception as e:
+        print("浏览器连接已断开，正在重启...")
+        browser = await restart_browser(browser_type, app)
+        page = await browser.new_page()
 
     await page.goto(request_data.url)
 
