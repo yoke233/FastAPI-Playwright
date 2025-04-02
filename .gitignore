@@ -29,6 +29,7 @@ ENV/
 env/
 venv.bak/
 env.bak/
+.vent/
 
 # IDE
 .vscode/

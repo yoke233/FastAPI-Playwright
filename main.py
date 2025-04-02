@@ -4,13 +4,16 @@ import os
 import platform
 from contextlib import asynccontextmanager
 from typing import List, Optional
+from fake_useragent import UserAgent
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 from playwright.async_api import TimeoutError as PlaywrightTimeoutError
-from playwright.async_api import async_playwright
+from playwright.async_api import async_playwright, Browser
 from pydantic import BaseModel, Field
 from uvicorn import Config, Server
+
+ua = UserAgent()
 
 
 class SearchIn(BaseModel):
@@ -196,7 +199,7 @@ async def get_page_info(request_data: RequestBody, request: Request):
     if browser_type not in app.state.browser_instances:
         p = request.app.state.playwright
         use_browser = getattr(p, browser_type, None)
-        browser = await use_browser.launch(headless=True)
+        browser: Browser = await use_browser.launch(headless=True)
         app.state.browser_instances[browser_type] = browser
     else:
         browser = app.state.browser_instances[browser_type]
@@ -206,11 +209,11 @@ async def get_page_info(request_data: RequestBody, request: Request):
         browser = await restart_browser(browser_type, app)
 
     try:
-        page = await browser.new_page()
+        page = await browser.new_page(user_agent=ua.random)
     except Exception as e:
         print("浏览器连接已断开，正在重启...")
         browser = await restart_browser(browser_type, app)
-        page = await browser.new_page()
+        page = await browser.new_page(user_agent=ua.random)
 
     await page.goto(request_data.url)
 
